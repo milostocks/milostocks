@@ -128,7 +128,7 @@ export default function RootLayout({
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/milostocks"
+                href="https://github.com/milostocks/milostocks"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="MILO on GitHub"

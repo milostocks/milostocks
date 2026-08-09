@@ -1,5 +1,8 @@
-# MILO — MiloStocks
+<p align="center">
+  <img src="public/banner.png" alt="MILO Banner" width="100%">
+</p>
 
+# MILO — MiloStocks
 **The live premium tracker for Robinhood Chain's tokenized stocks — plus a free, non-custodial way to bet on where they open next.**
 
 ### 🟢 Live now at **[milostocks.com](https://milostocks.com)**
