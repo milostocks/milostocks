@@ -1,0 +1,114 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1512"/>
+      <stop offset="55%" stop-color="#071009"/>
+      <stop offset="100%" stop-color="#050807"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="18%" cy="8%" r="70%">
+      <stop offset="0%" stop-color="#00c805" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#00c805" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="iconGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#0e9f4a"/>
+    </linearGradient>
+    <pattern id="grid" width="46" height="46" patternUnits="userSpaceOnUse">
+      <path d="M46 0H0V46" fill="none" stroke="#12241c" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#050807" stop-opacity="1"/>
+      <stop offset="18%" stop-color="#050807" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1500" height="500" fill="url(#bgGrad)"/>
+  <rect width="1500" height="500" fill="url(#grid)"/>
+  <rect width="1500" height="500" fill="url(#glow)"/>
+
+  <g font-family="-apple-system,'Segoe UI',Arial,sans-serif">
+    <!-- icon -->
+    <rect x="62" y="66" width="104" height="104" rx="26" fill="url(#iconGrad)"/>
+    <path d="M84 140 L114 110 L130 126 L152 96" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130 96 H152 V118" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- wordmark -->
+    <text x="186" y="168" font-size="108" font-weight="800" fill="#ffffff" letter-spacing="-2">SAV</text>
+    <circle cx="520" cy="118" r="9" fill="#00c805"/>
+
+    <text x="64" y="220" font-size="30" font-weight="600" fill="#9fb4bc">StockAssetVault</text>
+    <text x="64" y="262" font-size="21" fill="#7c8f97">24/7 tokenized stocks &#183; non-custodial UP / DOWN predict market</text>
+
+    <!-- pills -->
+    <rect x="64" y="300" width="266" height="50" rx="25" fill="#16a34a"/>
+    <circle cx="90" cy="325" r="6" fill="#ffffff"/>
+    <text x="106" y="332" font-size="17" font-weight="700" fill="#ffffff" letter-spacing="1">LIVE PREMIUM TRACKER</text>
+
+    <rect x="344" y="300" width="176" height="50" rx="25" fill="none" stroke="#00c805" stroke-opacity="0.5" stroke-width="1.5"/>
+    <circle cx="370" cy="325" r="6" fill="none" stroke="#00c805" stroke-width="1.5"/>
+    <text x="386" y="332" font-family="ui-monospace,'Cascadia Code',monospace" font-size="17" font-weight="700" fill="#00c805">rhav.global</text>
+  </g>
+
+  <!-- right-side rising candle chart -->
+  <g stroke-linecap="round">
+    <line x1="880" y1="140" x2="1438" y2="140" stroke="#12241c" stroke-width="1" stroke-dasharray="4 6"/>
+    <line x1="880" y1="240" x2="1438" y2="240" stroke="#12241c" stroke-width="1" stroke-dasharray="4 6"/>
+    <line x1="880" y1="340" x2="1438" y2="340" stroke="#12241c" stroke-width="1" stroke-dasharray="4 6"/>
+
+    <path d="M892,356 L934,338 L976,360 L1018,316 L1060,334 L1102,287 L1144,261 L1186,279 L1228,230 L1270,204 L1312,221 L1354,171 L1396,141 L1438,112"
+          fill="none" stroke="#00c805" stroke-width="2.5" stroke-opacity="0.85"/>
+
+    <!-- candles: x, bodyTop, bodyBottom, wickTop, wickBottom, color -->
+    <line x1="892" y1="322" x2="892" y2="388" stroke="#ff5252" stroke-width="2.5"/>
+    <rect x="879" y="340" width="26" height="32" rx="4" fill="#ff5252"/>
+
+    <line x1="934" y1="306" x2="934" y2="366" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="921" y="322" width="26" height="32" rx="4" fill="#00c805"/>
+
+    <line x1="976" y1="328" x2="976" y2="388" stroke="#ff5252" stroke-width="2.5"/>
+    <rect x="963" y="344" width="26" height="32" rx="4" fill="#ff5252"/>
+
+    <line x1="1018" y1="284" x2="1018" y2="346" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1005" y="300" width="26" height="32" rx="4" fill="#00c805"/>
+
+    <line x1="1060" y1="302" x2="1060" y2="364" stroke="#ff5252" stroke-width="2.5"/>
+    <rect x="1047" y="318" width="26" height="32" rx="4" fill="#ff5252"/>
+
+    <line x1="1102" y1="254" x2="1102" y2="318" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1089" y="270" width="26" height="34" rx="4" fill="#00c805"/>
+
+    <line x1="1144" y1="228" x2="1144" y2="292" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1131" y="244" width="26" height="34" rx="4" fill="#00c805"/>
+
+    <line x1="1186" y1="246" x2="1186" y2="308" stroke="#ff5252" stroke-width="2.5"/>
+    <rect x="1173" y="262" width="26" height="34" rx="4" fill="#ff5252"/>
+
+    <line x1="1228" y1="196" x2="1228" y2="262" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1215" y="212" width="26" height="36" rx="4" fill="#00c805"/>
+
+    <line x1="1270" y1="170" x2="1270" y2="236" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1257" y="186" width="26" height="36" rx="4" fill="#00c805"/>
+
+    <line x1="1312" y1="188" x2="1312" y2="250" stroke="#ff5252" stroke-width="2.5"/>
+    <rect x="1299" y="204" width="26" height="34" rx="4" fill="#ff5252"/>
+
+    <line x1="1354" y1="138" x2="1354" y2="202" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1341" y="154" width="26" height="34" rx="4" fill="#00c805"/>
+
+    <line x1="1396" y1="108" x2="1396" y2="172" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1383" y="124" width="26" height="34" rx="4" fill="#00c805"/>
+
+    <line x1="1438" y1="78" x2="1438" y2="144" stroke="#00c805" stroke-width="2.5"/>
+    <rect x="1425" y="94" width="26" height="36" rx="4" fill="#00c805"/>
+  </g>
+  <rect x="800" y="0" width="140" height="500" fill="url(#fade)"/>
+
+  <!-- ticker footer -->
+  <g font-family="-apple-system,'Segoe UI',Arial,sans-serif" font-size="19" font-weight="700">
+    <text x="762" y="470" fill="#ffffff">AAPL <tspan fill="#00c805">+1.24%</tspan></text>
+    <text x="912" y="470" fill="#ffffff">TSLA <tspan fill="#ff5252">-0.63%</tspan></text>
+    <text x="1062" y="470" fill="#ffffff">NVDA <tspan fill="#00c805">+2.10%</tspan></text>
+    <text x="1212" y="470" fill="#ffffff">MSFT <tspan fill="#00c805">+0.42%</tspan></text>
+    <text x="1358" y="470" fill="#ffffff">AMZN <tspan fill="#ff5252">-0.31%</tspan></text>
+  </g>
+</svg>

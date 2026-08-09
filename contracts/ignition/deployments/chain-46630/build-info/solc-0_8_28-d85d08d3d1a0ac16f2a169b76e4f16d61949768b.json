@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-d85d08d3d1a0ac16f2a169b76e4f16d61949768b",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.10.0"
+  },
+  "userSourceNameMap": {
+    "contracts/MockAggregator.sol": "project/contracts/MockAggregator.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/MockAggregator.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.28;\n\n/// @notice Minimal AggregatorV3Interface-compatible mock. Robinhood Chain\n/// testnet has no real Chainlink stock feeds, so `scripts/push-mock-price.ts`\n/// mirrors the real mainnet price into this contract on a schedule.\n/// GapMarket reads it through the exact same interface it would use against\n/// a real feed on mainnet — only the feed address changes later, not the code.\ncontract MockAggregator {\n    address public owner;\n    uint8 public constant decimals = 8;\n    string public description;\n\n    int256 private _answer;\n    uint256 private _updatedAt;\n    uint80 private _roundId;\n\n    event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt);\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"not owner\");\n        _;\n    }\n\n    constructor(string memory description_, int256 initialAnswer) {\n        require(initialAnswer > 0, \"bad answer\");\n        owner = msg.sender;\n        description = description_;\n        _answer = initialAnswer;\n        _updatedAt = block.timestamp;\n        _roundId = 1;\n    }\n\n    /// @param answer Price with 8 decimals, matching real Chainlink stock feeds.\n    function setAnswer(int256 answer) external onlyOwner {\n        require(answer > 0, \"bad answer\");\n        _answer = answer;\n        _updatedAt = block.timestamp;\n        _roundId += 1;\n        emit AnswerUpdated(answer, _roundId, _updatedAt);\n    }\n\n    function transferOwnership(address newOwner) external onlyOwner {\n        require(newOwner != address(0), \"zero addr\");\n        emit OwnershipTransferred(owner, newOwner);\n        owner = newOwner;\n    }\n\n    function latestRoundData()\n        external\n        view\n        returns (\n            uint80 roundId,\n            int256 answer,\n            uint256 startedAt,\n            uint256 updatedAt,\n            uint80 answeredInRound\n        )\n    {\n        return (_roundId, _answer, _updatedAt, _updatedAt, _roundId);\n    }\n}\n"
+      }
+    }
+  }
+}

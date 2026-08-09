@@ -1,0 +1,42 @@
+{
+  "NVDA": {
+    "mainnetFeed": "0x379EC4f7C378F34a1B47E4F3cbeBCbAC3E8E9F15",
+    "testnetMock": "0x3003F158ff30135f0a9B2536D398CBA127E02b01",
+    "name": "NVIDIA"
+  },
+  "AAPL": {
+    "mainnetFeed": "0x6B22A786bAa607d76728168703a39Ea9C99f2cD0",
+    "testnetMock": "0xe40894b93d4aaa84c7ab1ce827c2894aeb0d7e5f",
+    "name": "Apple"
+  },
+  "TSLA": {
+    "mainnetFeed": "0x4A1166a659A55625345e9515b32adECea5547C38",
+    "testnetMock": "0x89d4fea90c4e9bcc3d866e65579000c2b2166312",
+    "name": "Tesla"
+  },
+  "AMZN": {
+    "mainnetFeed": "0xD5a1508ceD74c084eBf3cBe853e2C968fB2a651C",
+    "testnetMock": "0xb538bbbe997a29f342cab8afaa2585a04633dfc5",
+    "name": "Amazon"
+  },
+  "MSFT": {
+    "mainnetFeed": "0x45C3C877C15E6BA2EBB19eA114Ea508d14C1Af2E",
+    "testnetMock": "0xb2bf2f9d4b6de9ca5e70a8a40f555be8658fc150",
+    "name": "Microsoft"
+  },
+  "GOOGL": {
+    "mainnetFeed": "0xF6f373a037c30F0e5010d854385cA89185AE638b",
+    "testnetMock": "0x334b2e2aece8e3b3299fa34d84d9341f56eaa5a7",
+    "name": "Alphabet Class A"
+  },
+  "META": {
+    "mainnetFeed": "0x7C38C00C30BEe9378381E7B6135d7283356D71b1",
+    "testnetMock": "0xfe3e59b9cb363741fc75ea41a3f8f2e5fb0ec6e4",
+    "name": "Meta Platforms"
+  },
+  "AMD": {
+    "mainnetFeed": "0x943A29E7ae51A4798823ca9eEd2ed533B2A22C72",
+    "testnetMock": "0x32da4eb33389c4e7346c6f3a84d75ca0d21eafc4",
+    "name": "AMD"
+  }
+}

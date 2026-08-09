@@ -1,0 +1,50 @@
+name: Snapshot premiums
+
+# Cheap "storage" for premium history: no DB, just append one JSONL line per
+# run to data/premium-history/<date>.jsonl and commit it. See CLAUDE.md §8.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+# Cron runs can occasionally be delayed/queued by GitHub; without this a
+# backlog of runs could commit+push concurrently and race on the same file.
+concurrency:
+  group: snapshot-premiums
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Take snapshot
+        run: node scripts/snapshot-premiums.mjs
+
+      - name: Prune snapshots older than 60 days
+        run: |
+          cutoff=$(date -u -d "60 days ago" +%Y-%m-%d)
+          for f in data/premium-history/*.jsonl; do
+            [ -e "$f" ] || continue
+            day=$(basename "$f" .jsonl)
+            if [[ "$day" < "$cutoff" ]]; then
+              git rm -q "$f"
+            fi
+          done
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/premium-history
+          git diff --cached --quiet && exit 0
+          git commit -m "Premium snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

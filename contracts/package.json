@@ -1,0 +1,28 @@
+{
+  "name": "rham-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GapMarket prediction-market contracts for RHAM (Robinhood Chain testnet)",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat ignition deploy ignition/modules/GapMarket.ts --network robinhoodTestnet",
+    "deploy:testnet:play": "hardhat ignition deploy ignition/modules/PlayMarket.ts --network robinhoodTestnet",
+    "push-price": "node scripts/push-mock-price.ts",
+    "push-prices": "node scripts/push-mock-prices.ts",
+    "create-market": "node scripts/create-market.ts",
+    "create-markets": "node scripts/create-markets.ts",
+    "create-weekend-markets": "node scripts/create-weekend-markets.ts",
+    "create-play-markets": "node scripts/create-play-markets.ts",
+    "create-play-weekend-markets": "node scripts/create-play-weekend-markets.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.1.8",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",
+    "@types/node": "^26.1.1",
+    "dotenv": "^17.4.2",
+    "hardhat": "^3.10.0",
+    "viem": "^2.55.4"
+  }
+}

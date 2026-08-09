@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-382088ed63f0455aca8b189a8757bc02d3e9da1e",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.10.0"
+  },
+  "userSourceNameMap": {
+    "contracts/GapMarket.sol": "project/contracts/GapMarket.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/GapMarket.sol": {
+        "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.28;\n\n/// @notice The subset of Chainlink's AggregatorV3Interface GapMarket needs.\n/// Works unchanged against MockAggregator (testnet) or a real Chainlink feed\n/// (mainnet) — the market's price source is never trusted off-chain.\ninterface IAggregatorV3 {\n    function latestRoundData()\n        external\n        view\n        returns (\n            uint80 roundId,\n            int256 answer,\n            uint256 startedAt,\n            uint256 updatedAt,\n            uint80 answeredInRound\n        );\n}\n\n/// @title GapMarket\n/// @notice Non-custodial pari-mutuel prediction market: bet whether a stock's\n/// price rises or falls during a session, resolved by reading the same\n/// on-chain price feed at session start and session end. No off-chain\n/// resolver, no admin fund access — createMarket is the only owner-gated\n/// action, everything else (lock, resolve, claim) is permissionless.\n/// Testnet only for now — see CLAUDE.md.\ncontract GapMarket {\n    enum State {\n        Created,\n        Locked,\n        Resolved\n    }\n\n    enum Outcome {\n        Undecided,\n        Up,\n        Down,\n        Push\n    }\n\n    struct Market {\n        bytes32 ticker;\n        address feed;\n        uint64 locksAt; // betting closes, start price snapshot taken at/after this\n        uint64 resolvesAt; // end price snapshot taken at/after this\n        int256 startPrice;\n        int256 endPrice;\n        uint256 upPool;\n        uint256 downPool;\n        State state;\n        Outcome outcome;\n    }\n\n    /// @notice A feed reading older than this is refused as a lock/resolve\n    /// snapshot — protects against resolving off a price the pusher script\n    /// stopped updating a long time ago.\n    uint256 public constant MAX_PRICE_STALENESS = 30 minutes;\n\n    address public owner;\n    uint256 public marketCount;\n\n    mapping(uint256 => Market) public markets;\n    mapping(uint256 => mapping(address => uint256)) public upBets;\n    mapping(uint256 => mapping(address => uint256)) public downBets;\n    mapping(uint256 => mapping(address => bool)) public claimed;\n\n    uint256 private _reentrancyLock = 1;\n\n    event MarketCreated(\n        uint256 indexed id,\n        bytes32 indexed ticker,\n        address feed,\n        uint64 locksAt,\n        uint64 resolvesAt\n    );\n    event BetPlaced(uint256 indexed id, address indexed user, bool up, uint256 amount);\n    event MarketLocked(uint256 indexed id, int256 startPrice);\n    event MarketResolved(uint256 indexed id, Outcome outcome, int256 startPrice, int256 endPrice);\n    event Claimed(uint256 indexed id, address indexed user, uint256 amount);\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"not owner\");\n        _;\n    }\n\n    modifier nonReentrant() {\n        require(_reentrancyLock == 1, \"reentrant\");\n        _reentrancyLock = 2;\n        _;\n        _reentrancyLock = 1;\n    }\n\n    constructor() {\n        owner = msg.sender;\n    }\n\n    function transferOwnership(address newOwner) external onlyOwner {\n        require(newOwner != address(0), \"zero addr\");\n        owner = newOwner;\n    }\n\n    /// @param ticker Short ticker as bytes32, e.g. bytes32(\"NVDA\").\n    /// @param feed AggregatorV3-compatible price feed for this ticker.\n    /// @param locksAt Unix timestamp betting closes / start price is read at.\n    /// @param resolvesAt Unix timestamp end price is read at. Must be after locksAt.\n    function createMarket(\n        bytes32 ticker,\n        address feed,\n        uint64 locksAt,\n        uint64 resolvesAt\n    ) external onlyOwner returns (uint256 id) {\n        require(feed != address(0), \"zero feed\");\n        require(locksAt > block.timestamp, \"locksAt in the past\");\n        require(resolvesAt > locksAt, \"resolvesAt before locksAt\");\n\n        id = marketCount++;\n        markets[id] = Market({\n            ticker: ticker,\n            feed: feed,\n            locksAt: locksAt,\n            resolvesAt: resolvesAt,\n            startPrice: 0,\n            endPrice: 0,\n            upPool: 0,\n            downPool: 0,\n            state: State.Created,\n            outcome: Outcome.Undecided\n        });\n\n        emit MarketCreated(id, ticker, feed, locksAt, resolvesAt);\n    }\n\n    /// @notice Bet that the price will be higher (`up = true`) or lower\n    /// (`up = false`) at `resolvesAt` than at `locksAt`. Add to an existing\n    /// position by calling again before locksAt.\n    function placeBet(uint256 id, bool up) external payable {\n        Market storage m = markets[id];\n        require(m.feed != address(0), \"no such market\");\n        require(block.timestamp < m.locksAt, \"betting closed\");\n        require(msg.value > 0, \"no stake\");\n\n        if (up) {\n            upBets[id][msg.sender] += msg.value;\n            m.upPool += msg.value;\n        } else {\n            downBets[id][msg.sender] += msg.value;\n            m.downPool += msg.value;\n        }\n\n        emit BetPlaced(id, msg.sender, up, msg.value);\n    }\n\n    /// @notice Snapshots the start price. Permissionless and callable by\n    /// anyone once `locksAt` has passed — the price itself comes from the\n    /// feed, not from the caller, so there's nothing to trust about who calls it.\n    function lockMarket(uint256 id) external {\n        Market storage m = markets[id];\n        require(m.state == State.Created, \"already locked\");\n        require(block.timestamp >= m.locksAt, \"too early to lock\");\n\n        m.startPrice = _readFreshPrice(m.feed);\n        m.state = State.Locked;\n\n        emit MarketLocked(id, m.startPrice);\n    }\n\n    /// @notice Snapshots the end price and settles the outcome. Permissionless,\n    /// same trust model as lockMarket.\n    function resolveMarket(uint256 id) external {\n        Market storage m = markets[id];\n        require(m.state == State.Locked, \"not locked\");\n        require(block.timestamp >= m.resolvesAt, \"too early to resolve\");\n\n        m.endPrice = _readFreshPrice(m.feed);\n\n        if (m.endPrice > m.startPrice) {\n            m.outcome = Outcome.Up;\n        } else if (m.endPrice < m.startPrice) {\n            m.outcome = Outcome.Down;\n        } else {\n            m.outcome = Outcome.Push;\n        }\n        m.state = State.Resolved;\n\n        emit MarketResolved(id, m.outcome, m.startPrice, m.endPrice);\n    }\n\n    /// @notice Claims this caller's winnings (or refund, on a Push / a\n    /// decisive outcome nobody bet on) for a resolved market.\n    function claim(uint256 id) external nonReentrant {\n        require(markets[id].state == State.Resolved, \"not resolved\");\n        require(!claimed[id][msg.sender], \"already claimed\");\n\n        uint256 payout = claimableOf(id, msg.sender);\n        require(payout > 0, \"nothing to claim\");\n\n        claimed[id][msg.sender] = true; // effects before interaction\n\n        (bool ok, ) = msg.sender.call{value: payout}(\"\");\n        require(ok, \"transfer failed\");\n\n        emit Claimed(id, msg.sender, payout);\n    }\n\n    /// @notice View-only payout preview for the frontend; same math as claim().\n    function claimableOf(uint256 id, address user) public view returns (uint256) {\n        Market storage m = markets[id];\n        if (m.state != State.Resolved || claimed[id][user]) return 0;\n\n        uint256 up = upBets[id][user];\n        uint256 down = downBets[id][user];\n        if (up == 0 && down == 0) return 0;\n\n        if (m.outcome == Outcome.Push) {\n            return up + down;\n        }\n\n        bool upWon = m.outcome == Outcome.Up;\n        uint256 winnerPool = upWon ? m.upPool : m.downPool;\n        uint256 loserPool = upWon ? m.downPool : m.upPool;\n        uint256 userWinnerStake = upWon ? up : down;\n\n        if (winnerPool == 0) {\n            // A decisive outcome nobody bet on — refund both sides rather\n            // than stranding the pool with no eligible claimant.\n            return up + down;\n        }\n        if (userWinnerStake == 0) return 0;\n\n        return userWinnerStake + (userWinnerStake * loserPool) / winnerPool;\n    }\n\n    function _readFreshPrice(address feed) private view returns (int256) {\n        (, int256 answer, , uint256 updatedAt, ) = IAggregatorV3(feed).latestRoundData();\n        require(answer > 0, \"bad feed answer\");\n        require(block.timestamp - updatedAt <= MAX_PRICE_STALENESS, \"stale price\");\n        return answer;\n    }\n}\n"
+      }
+    }
+  }
+}

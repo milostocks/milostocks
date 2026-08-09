@@ -1,0 +1,24 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'Segoe UI',ui-sans-serif,system-ui,sans-serif">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="34%" r="60%">
+      <stop offset="0%" stop-color="#00c805" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#00c805" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="#060a07"/>
+  <rect width="400" height="400" fill="url(#glow)"/>
+
+  <!-- dashed reference line: the frozen official close, projected forward -->
+  <line x1="140" y1="204" x2="322" y2="204" stroke="#64707d" stroke-width="3.5" stroke-dasharray="7 9" opacity="0.85"/>
+
+  <!-- muted candle: official close (frozen) -->
+  <line x1="148" y1="182" x2="148" y2="292" stroke="#8a97a4" stroke-width="4.5" stroke-linecap="round"/>
+  <rect x="120" y="204" width="56" height="88" rx="7" fill="#9aa7b4"/>
+
+  <!-- accent candle: live 24/7 token price, trading above the close -->
+  <line x1="252" y1="78" x2="252" y2="292" stroke="#00c805" stroke-width="4.5" stroke-linecap="round"/>
+  <rect x="224" y="102" width="56" height="190" rx="7" fill="#00c805"/>
+
+  <!-- small delta mark reinforcing "premium" -->
+  <path d="M296 132 L314 108 L332 132" stroke="#00c805" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
